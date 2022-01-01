@@ -4,6 +4,7 @@
 import datetime
 
 from telegram.ext import ConversationHandler
+import switchbot_py3
 
 import verifier
 from configurations import Configuration
@@ -38,6 +39,10 @@ def status(update, context):
 
 
 def turn_on():
+    switchbot_driver = switchbot_py3.Driver(Configuration.BluetoothAddress,
+                                            Configuration.BluetoothInterface)
+    switchbot_driver.run_command("on")  # TODO: Check return value
+
     Configuration.CurrentStatus = "ON"
     Configuration.LastChange = datetime.datetime.now().timestamp()
     Configuration.save_configuration()
@@ -45,6 +50,10 @@ def turn_on():
 
 
 def turn_off():
+    switchbot_driver = switchbot_py3.Driver(Configuration.BluetoothAddress,
+                                            Configuration.BluetoothInterface)
+    switchbot_driver.run_command("off")  # TODO: Check return value
+
     Configuration.CurrentStatus = "OFF"
     Configuration.LastChange = datetime.datetime.now().timestamp()
     Configuration.save_configuration()
