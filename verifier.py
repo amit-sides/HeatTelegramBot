@@ -5,6 +5,7 @@ from telegram.ext import ConversationHandler
 
 from configurations import Configuration
 
+
 def verify_id(func):
     def verifier(update, context):
         if update.message is None or update.message.from_user is None:

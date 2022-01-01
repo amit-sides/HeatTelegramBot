@@ -8,6 +8,7 @@ from telegram.ext import ConversationHandler
 import verifier
 from configurations import Configuration
 
+
 def get_status():
     last_change = datetime.datetime.fromtimestamp(Configuration.LastChange)
     last_change_duration = datetime.datetime.now() - last_change
@@ -35,17 +36,20 @@ def status(update, context):
     update.message.reply_text(get_status())
     return ConversationHandler.END
 
+
 def turn_on():
     Configuration.CurrentStatus = "ON"
     Configuration.LastChange = datetime.datetime.now().timestamp()
     Configuration.save_configuration()
     return True
 
+
 def turn_off():
     Configuration.CurrentStatus = "OFF"
     Configuration.LastChange = datetime.datetime.now().timestamp()
     Configuration.save_configuration()
     return True
+
 
 @verifier.verify_id
 def on(update, context):
@@ -97,4 +101,3 @@ def force_off(update, context):
     else:
         update.message.reply_text("Failed to turn off...")
     return ConversationHandler.END
-
