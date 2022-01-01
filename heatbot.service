@@ -1,0 +1,16 @@
+[Unit]
+Description=HeatBot Service
+After=network-online.target
+Wants=network-online.target systemd-networkd-wait-online.service
+
+StartLimitIntervalSec=500
+StartLimitBurst=5
+
+[Service]
+Restart=on-failure
+RestartSec=5s
+
+ExecStart=/usr/bin/python3 /home/user/HeatTelegramBot/heatbot.py
+
+[Install]
+WantedBy=multi-user.target
