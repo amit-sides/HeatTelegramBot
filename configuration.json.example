@@ -1,0 +1,9 @@
+{
+  "TelegramAccessToken": "BOT_TOKEN",
+  "MasterID": "314704887",
+  "CurrentStatus": "OFF",
+  "LastChange": 1640993816.893626,
+  "Allowed": {
+    "314704887": "Sides"
+  }
+}
