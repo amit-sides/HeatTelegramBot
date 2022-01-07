@@ -70,7 +70,7 @@ def on(update, context):
         return status(update, context)
 
     if turn_on():
-        update.message.reply_text("Turned Heatbot ON.")
+        update.message.reply_text("Turned Heatbot ON 💡")
     else:
         update.message.reply_text("Failed to turn on...")
     return ConversationHandler.END
@@ -82,7 +82,7 @@ def off(update, context):
         return status(update, context)
 
     if turn_off():
-        update.message.reply_text("Turned Heat OFF🍗.")
+        update.message.reply_text("Turned Heat OFF 🍗")
     else:
         update.message.reply_text("Failed to turn off...")
     return ConversationHandler.END
@@ -91,10 +91,10 @@ def off(update, context):
 @verifier.verify_id
 def force_on(update, context):
     if Configuration.CurrentStatus == "ON":
-        update.message.reply_text("HeatBot is already ON💡. Turning it ON anyways...")
+        update.message.reply_text("HeatBot is already ON 💡. Turning it ON anyways...")
 
     if turn_on():
-        update.message.reply_text("Turned Heat ON💡.")
+        update.message.reply_text("Turned Heat ON 💡")
     else:
         update.message.reply_text("Failed to turn on...")
     return ConversationHandler.END
@@ -103,7 +103,7 @@ def force_on(update, context):
 @verifier.verify_id
 def force_off(update, context):
     if Configuration.CurrentStatus == "OFF":
-        update.message.reply_text("HeatBot is already OFF🍗. Turning it OFF anyways...")
+        update.message.reply_text("HeatBot is already OFF 🍗. Turning it OFF anyways...")
     
     if turn_off():
         update.message.reply_text("Turned Heatbot OFF.")
