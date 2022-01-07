@@ -7,5 +7,5 @@
     "314704887": "Sides"
   },
   "BluetoothAddress": "ea:91:8c:e1:06:65",
-  "BluetoothInterface": ""
+  "BluetoothInterface": "hci0"
 }

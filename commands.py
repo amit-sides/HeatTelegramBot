@@ -41,7 +41,9 @@ def status(update, context):
 def turn_on():
     switchbot_driver = switchbot_py3.Driver(Configuration.BluetoothAddress,
                                             Configuration.BluetoothInterface)
-    switchbot_driver.run_command("on")  # TODO: Check return value
+    return_code = switchbot_driver.run_command("on")
+    if return_code != [b'\x13']:
+        return False
 
     Configuration.CurrentStatus = "ON"
     Configuration.LastChange = datetime.datetime.now().timestamp()
@@ -52,7 +54,9 @@ def turn_on():
 def turn_off():
     switchbot_driver = switchbot_py3.Driver(Configuration.BluetoothAddress,
                                             Configuration.BluetoothInterface)
-    switchbot_driver.run_command("off")  # TODO: Check return value
+    return_code = switchbot_driver.run_command("off")
+    if return_code != [b'\x13']:
+        return False
 
     Configuration.CurrentStatus = "OFF"
     Configuration.LastChange = datetime.datetime.now().timestamp()
@@ -65,7 +69,6 @@ def on(update, context):
     if Configuration.CurrentStatus == "ON":
         return status(update, context)
 
-    update.message.reply_text("Should turn bot ON here...")
     if turn_on():
         update.message.reply_text("Turned Heatbot ON.")
     else:
@@ -78,7 +81,6 @@ def off(update, context):
     if Configuration.CurrentStatus == "OFF":
         return status(update, context)
 
-    update.message.reply_text("Should turn bot OFF here...")
     if turn_off():
         update.message.reply_text("Turned Heat OFF🍗.")
     else:
@@ -91,7 +93,6 @@ def force_on(update, context):
     if Configuration.CurrentStatus == "ON":
         update.message.reply_text("HeatBot is already ON💡. Turning it ON anyways...")
 
-    update.message.reply_text("Should turn bot ON here...")
     if turn_on():
         update.message.reply_text("Turned Heat ON💡.")
     else:
@@ -103,8 +104,7 @@ def force_on(update, context):
 def force_off(update, context):
     if Configuration.CurrentStatus == "OFF":
         update.message.reply_text("HeatBot is already OFF🍗. Turning it OFF anyways...")
-
-    update.message.reply_text("Should turn bot OFF here...")
+    
     if turn_off():
         update.message.reply_text("Turned Heatbot OFF.")
     else:
