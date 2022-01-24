@@ -14,6 +14,7 @@ import commands
 AVAILABLE_COMMANDS = """The available commands are:
 /start         - Starts interaction with HeatBot.
 /status      - Shows the status of the HeatBot.
+/log             - Shows log of recent commands.
 /on             - Turns the heat on.
 /off             - Turns the heat off."""
 LAST_COMMANDS = """
@@ -110,6 +111,7 @@ def main():
                       CommandHandler("list", users.list_users),
                       CommandHandler("status", commands.status),
                       MessageHandler(word_regex("[sS]tatus"), commands.status),
+                      CommandHandler("log", commands.log),
                       CommandHandler("on", commands.on),
                       MessageHandler(word_regex("[oO][nN]"), commands.on),
                       CommandHandler("off", commands.off),
@@ -140,6 +142,7 @@ def main():
                     BotCommand(command="on", description="Turns the heat on."),
                     BotCommand(command="off", description="Turns the heat off."),
                     BotCommand(command="status", description="Shows the status of the HeatBot."),
+                    BotCommand(command="log", description="Shows the log of recent commands."),
                     BotCommand(command="help", description="Shows a list of all commands.")]
     updater.bot.set_my_commands(bot_commands)
 
