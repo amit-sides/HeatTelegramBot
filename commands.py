@@ -6,8 +6,39 @@ import datetime
 from telegram.ext import ConversationHandler
 import switchbot_py3
 
+import heatbot
 import verifier
 from configurations import Configuration
+
+LOG = list()
+LOG_SIZE = 15
+
+def add_to_log(update, action):
+    global LOG
+
+    user = update.message.from_user
+    user_id = str(user["id"])
+    name = Configuration.Allowed[user_id]
+
+    time = datetime.datetime.now().strftime("%d.%m %H:%M")
+    LOG.append((name, time, action))
+    if len(LOG) >= LOG_SIZE:
+        LOG.pop(0)
+
+    heatbot.logger.info(f"{name} used action '{action}'.")
+
+
+def get_log(is_master=False):
+    global LOG
+    if len(LOG) == 0:
+        return "   None."
+
+    log = ""
+    for name, time, action in LOG:
+        if is_master:
+            log += "%10s : " % (name,)
+        log += f"{time} - {action}.\n"
+    return log[:-1]
 
 
 def get_status():
@@ -35,6 +66,16 @@ def get_status():
 @verifier.verify_id
 def status(update, context):
     update.message.reply_text(get_status())
+    add_to_log(update, "status")
+    return ConversationHandler.END
+
+@verifier.verify_id
+def log(update, context):
+    user = update.message.from_user
+    user_id = str(user["id"])
+
+    update.message.reply_text(get_log(user_id == Configuration.MasterID))
+    add_to_log(update, "log")
     return ConversationHandler.END
 
 
@@ -71,6 +112,7 @@ def on(update, context):
 
     if turn_on():
         update.message.reply_text("Turned Heatbot ON 💡")
+        add_to_log(update, "on")
     else:
         update.message.reply_text("Failed to turn on...")
     return ConversationHandler.END
@@ -83,6 +125,7 @@ def off(update, context):
 
     if turn_off():
         update.message.reply_text("Turned Heat OFF 🍗")
+        add_to_log(update, "off")
     else:
         update.message.reply_text("Failed to turn off...")
     return ConversationHandler.END
@@ -95,6 +138,7 @@ def force_on(update, context):
 
     if turn_on():
         update.message.reply_text("Turned Heat ON 💡")
+        add_to_log(update, "force on")
     else:
         update.message.reply_text("Failed to turn on...")
     return ConversationHandler.END
@@ -107,6 +151,7 @@ def force_off(update, context):
     
     if turn_off():
         update.message.reply_text("Turned Heatbot OFF.")
+        add_to_log(update, "force off")
     else:
         update.message.reply_text("Failed to turn off...")
     return ConversationHandler.END
