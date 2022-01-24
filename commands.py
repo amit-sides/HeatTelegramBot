@@ -30,10 +30,11 @@ def add_to_log(update, action):
 
 def get_log(is_master=False):
     global LOG
-    if len(LOG) == 0:
-        return "   None."
 
-    log = ""
+    log = "Logs:\n"
+    if len(LOG) == 0:
+        return log + "     None."
+
     for name, time, action in LOG:
         if is_master:
             log += "%10s : " % (name,)
