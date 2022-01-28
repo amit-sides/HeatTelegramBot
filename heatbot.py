@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import threading
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler, CallbackQueryHandler
 from telegram import BotCommand, KeyboardButton, ReplyKeyboardMarkup
@@ -151,10 +152,18 @@ def main():
     updater.start_polling()
     logger.info("Heatbot started!")
 
+    # Starting automatic off thread
+    should_stop_event = threading.Event()
+    automatic_off_thread = threading.Thread(target=commands.async_automatic_off, args=(should_stop_event,))
+    automatic_off_thread.start()
+
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
     # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
+    
+    should_stop_event.set()
+    automatic_off_thread.join(commands.AUTOMATIC_OFF_THREAD_SLEEP * 2)  # Wait 10 seconds for the thread to stop
     logger.info("Heatbot stopped!")
 
 

@@ -20,6 +20,8 @@ class DynamicConfiguration:
 
     @classmethod
     def __getattr__(cls, key):
+        if key not in cls.__configuration:
+            return None
         return cls.__configuration[key]
 
     @classmethod

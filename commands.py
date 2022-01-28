@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import time
 
 from telegram.ext import ConversationHandler
 import switchbot_py3
@@ -12,16 +13,21 @@ from configurations import Configuration
 
 LOG = list()
 LOG_SIZE = 15
+AUTOMATIC_OFF_THREAD_INTERVALS = 5 * 60  # 5 Minutes
+AUTOMATIC_OFF_THREAD_SLEEP = 5  # 5 Seconds
 
 def add_to_log(update, action):
     global LOG
 
-    user = update.message.from_user
-    user_id = str(user["id"])
-    name = Configuration.Allowed[user_id]
+    if update is None:
+        name = "System"
+    else:
+        user = update.message.from_user
+        user_id = str(user["id"])
+        name = Configuration.Allowed[user_id]
 
-    time = datetime.datetime.now().strftime("%d.%m %H:%M")
-    LOG.append((name, time, action))
+    current_time = datetime.datetime.now().strftime("%d.%m %H:%M")
+    LOG.append((name, current_time, action))
     if len(LOG) >= LOG_SIZE:
         LOG.pop(0)
 
@@ -31,15 +37,15 @@ def add_to_log(update, action):
 def get_log(is_master=False):
     global LOG
 
-    log = "Logs:\n"
+    log_output = "```Logs:\n"
     if len(LOG) == 0:
-        return log + "     None."
+        return log_output + "     None."
 
-    for name, time, action in LOG:
+    for name, current_time, action in LOG:
         if is_master:
-            log += "%10s : " % (name,)
-        log += f"{time} - {action}.\n"
-    return log[:-1]
+            log_output += "%10s : " % (name,)
+        log_output += f"{current_time} - {action}.\n"
+    return log_output[:-1] + "```"
 
 
 def get_status():
@@ -56,12 +62,12 @@ def get_status():
     duration_string += f"{minutes} minutes"
 
     if Configuration.CurrentStatus == "ON":
-        status = f"The heat has been ON for {duration_string}."
+        status_message = f"The heat has been ON for {duration_string}."
     elif Configuration.CurrentStatus == "OFF":
-        status = f"The heat has been OFF for {duration_string}."
+        status_message = f"The heat has been OFF for {duration_string}."
     else:
-        status = f"Current Status: UNKNOWN.\nLast status change: {duration_string} ago."
-    return status
+        status_message = f"Current Status: UNKNOWN.\nLast status change: {duration_string} ago."
+    return status_message
 
 
 @verifier.verify_id
@@ -156,3 +162,24 @@ def force_off(update, context):
     else:
         update.message.reply_text("Failed to turn off...")
     return ConversationHandler.END
+
+def async_automatic_off(should_stop_event):
+    while not should_stop_event.is_set():
+        for _ in range(AUTOMATIC_OFF_THREAD_INTERVALS // AUTOMATIC_OFF_THREAD_SLEEP):
+            time.sleep(AUTOMATIC_OFF_THREAD_SLEEP)
+            if should_stop_event.is_set():
+                return
+
+        if Configuration.CurrentStatus != "ON":
+            continue
+        if Configuration.AutomaticOffInMinutes is None:
+            continue
+
+        now = datetime.datetime.now()
+        last_change = datetime.datetime.fromtimestamp(Configuration.LastChange)
+        minutes_since_last_change = (now - last_change).total_seconds() / 60
+        if minutes_since_last_change >= Configuration.AutomaticOffInMinutes:
+            if turn_off():
+                add_to_log(None, "automatic off")
+            else:
+                heatbot.logger.warning("Automatic off failed")
