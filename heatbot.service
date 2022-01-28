@@ -7,10 +7,11 @@ StartLimitIntervalSec=500
 StartLimitBurst=5
 
 [Service]
+WorkingDirectory=/home/pi/Desktop/HeatTelegramBot/
 Restart=on-failure
 RestartSec=5s
-
-ExecStart=/usr/bin/python3 /home/user/HeatTelegramBot/heatbot.py
+User=pi
+ExecStart=/usr/bin/python3 /home/pi/Desktop/HeatTelegramBot/heatbot.py
 
 [Install]
 WantedBy=multi-user.target
