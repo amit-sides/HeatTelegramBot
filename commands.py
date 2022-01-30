@@ -81,7 +81,7 @@ def log(update, context):
     user = update.message.from_user
     user_id = str(user["id"])
 
-    update.message.reply_markdown_v2("```" + get_log(user_id == Configuration.MasterID) + "```")
+    update.message.reply_text(get_log(user_id == Configuration.MasterID))
     add_to_log(update, "log")
     return ConversationHandler.END
 
