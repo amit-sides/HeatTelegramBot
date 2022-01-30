@@ -73,7 +73,6 @@ def start(update, context):
 @verifier.verify_id
 def default(update, context):
     """Answer an unknown message"""
-    print(update.message.text)
     update.message.reply_text("I didn't understand you. type /help for commands...")
 
 
@@ -161,7 +160,7 @@ def main():
     # SIGTERM or SIGABRT. This should be used most of the time, since
     # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
-    
+
     should_stop_event.set()
     automatic_off_thread.join(commands.AUTOMATIC_OFF_THREAD_SLEEP * 2)  # Wait 10 seconds for the thread to stop
     logger.info("Heatbot stopped!")

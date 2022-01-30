@@ -37,7 +37,7 @@ def add_to_log(update, action):
 def get_log(is_master=False):
     global LOG
 
-    log_output = "```Logs:\n"
+    log_output = "Logs:\n"
     if len(LOG) == 0:
         return log_output + "     None."
 
@@ -45,7 +45,7 @@ def get_log(is_master=False):
         if is_master:
             log_output += "%10s : " % (name,)
         log_output += f"{current_time} - {action}.\n"
-    return log_output[:-1] + "```"
+    return log_output[:-1]
 
 
 def get_status():
@@ -81,7 +81,7 @@ def log(update, context):
     user = update.message.from_user
     user_id = str(user["id"])
 
-    update.message.reply_text(get_log(user_id == Configuration.MasterID))
+    update.message.reply_markdown_v2("```" + get_log(user_id == Configuration.MasterID) + "```")
     add_to_log(update, "log")
     return ConversationHandler.END
 
